@@ -190,11 +190,12 @@ static void sort(int init){
 			participants[i] = participants[max];
 			participants[max] = tmp;
 		}
-		if(init)
-			printEngine(i);
-		else
+		if(! init)
 			input[participants[i].id].nbQualif ++;
 	}
+	if (init)
+		for(int i = 0 ; i < limit ; i ++)
+			printEngine(i);
 }
 
 static void getScores(int init){
