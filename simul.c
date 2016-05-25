@@ -300,9 +300,10 @@ int main(int argc, char * argv []){
 		simulate();
 		if((100 * (i + 1) % NBITER == 0)){
 			int percentage = (100 * (i + 1)) / NBITER;
-			if (percentage > 10)
-				printf("\b");
-			printf("\b\b%d%%", percentage);
+			printf("\r");
+			for(int k = 0 ; k < 80 ; k ++)
+			       printf(" ");	
+			printf("\rSimulation currently at %d%%", percentage);
 			fflush(stdout);
 		}
 	}
