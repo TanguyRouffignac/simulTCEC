@@ -4,15 +4,15 @@
 #include <stdlib.h>
 #include "elotable.h"
 
-#define BLACKLOSS 0
-#define WHITELOSS 1
-#define BLACKDRAW 2
-#define WHITEDRAW 3
-#define BLACKWIN  4
-#define WHITEWIN  5
-#define BLACKPLAY 6
-#define WHITEPLAY 7
-#define SELF      8
+#define BLACKLOSS 48
+#define WHITELOSS 49
+#define BLACKDRAW 50
+#define WHITEDRAW 51
+#define BLACKWIN  52
+#define WHITEWIN  53
+#define BLACKPLAY 54
+#define WHITEPLAY 55
+#define SELF      56
 #define NBITER    10000000
 #define NBPLAYER  16
 #define NBQUALIF  8
@@ -258,30 +258,30 @@ static void simulate(){
 				if(participants[i].results[(NBGAMES * j) + k] == BLACKPLAY){
 					int r = rand() % 200;
 					if(r < getLosingProbability(participants[i].Elo - participants[j].Elo)){
-						participants[i].results[j] = BLACKLOSS;
-						participants[j].results[i] = WHITEWIN;
+						participants[i].results[(NBGAMES * j) + k] = BLACKLOSS;
+						participants[j].results[(NBGAMES * i) + k] = WHITEWIN;
 					} else {
 						if(r < 3 * getLosingProbability(participants[i].Elo - participants[j].Elo)){
-							participants[i].results[j] = BLACKDRAW;
-							participants[j].results[i] = WHITEDRAW;
+							participants[i].results[(NBGAMES * j) + k] = BLACKDRAW;
+							participants[j].results[(NBGAMES * i) + k] = WHITEDRAW;
 						} else {
-							participants[i].results[j] = BLACKWIN;
-							participants[j].results[i] = WHITELOSS;
+							participants[i].results[(NBGAMES * j) + k] = BLACKWIN;
+							participants[j].results[(NBGAMES * i) + k] = WHITELOSS;
 						}
 					}
 				}
 				if(participants[i].results[(NBGAMES * j) + k] == WHITEPLAY){
 					int r = rand() % 200;
 					if(r < getLosingProbability(participants[i].Elo - participants[j].Elo)){
-						participants[i].results[j] = WHITELOSS;
-						participants[j].results[i] = BLACKWIN;
+						participants[i].results[(NBGAMES * j) + k] = WHITELOSS;
+						participants[j].results[(NBGAMES * i) + k] = BLACKWIN;
 					} else {
 						if(r < 3 * getLosingProbability(participants[i].Elo - participants[j].Elo)){
-							participants[i].results[j] = WHITEDRAW;
-							participants[j].results[i] = BLACKDRAW;
+							participants[i].results[(NBGAMES * j) + k] = WHITEDRAW;
+							participants[j].results[(NBGAMES * i) + k] = BLACKDRAW;
 						} else {
-							participants[i].results[j] = WHITEWIN;
-							participants[j].results[i] = BLACKLOSS;
+							participants[i].results[(NBGAMES * j) + k] = WHITEWIN;
+							participants[j].results[(NBGAMES * i) + k] = BLACKLOSS;
 						}
 					}
 				}
@@ -293,10 +293,16 @@ static void simulate(){
 
 int main(int argc, char * argv []){
 	srand((unsigned int)time(NULL));
+	char c;
 	for(int i = 0 ; i < NBPLAYER ; i ++) {
 		scanf("%s %d %d ", input[i].name, &(input[i].nbCrash), &(input[i].Elo));
-		for(int j = 0 ; j < (NBPLAYER * NBGAMES) ; j ++)
-			scanf("%d ", &(input[i].results[j]));
+		for(int j = 0 ; j < NBPLAYER ; j ++){
+			for(int k = 0 ; k < NBGAMES ; k ++){
+				scanf("%c", &c);
+				input[i].results[(j * NBGAMES) + k] = (int) c;
+			}
+			scanf(" ");
+		}
 		input[i].id = i;
 		if(strlen(input[i].name) > maxNameLength)
 			maxNameLength = strlen(input[i].name);
