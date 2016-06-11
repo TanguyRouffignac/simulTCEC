@@ -1,3 +1,4 @@
+CC = gcc
 CFLAGS = -g -Wall -Werror -std=c99
 
 all: simul
@@ -5,7 +6,7 @@ all: simul
 simul: simul.o elotable.o
 
 run: simul
-	@cat input | ./simul
+	@cat stage1b | ./simul
 
 clean:
 	rm -rf *.o simul
