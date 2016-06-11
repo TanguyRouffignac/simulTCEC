@@ -214,7 +214,7 @@ static void sort(int init){
 static void getScores(int init){
 	for (int i = 0 ; i < NBPLAYER ; i ++){
 		participants[i].score = 0;
-		for (int j = 0 ; j < NBPLAYER ; j ++){
+		for (int j = 0 ; j < (NBPLAYER * NBGAMES) ; j ++){
 			switch (participants[i].results[j]) {
 				case BLACKDRAW:
 				case WHITEDRAW:
@@ -231,15 +231,15 @@ static void getScores(int init){
 	}
 	for (int i = 0 ; i < NBPLAYER ; i ++){
 		participants[i].SB = 0;
-		for (int j = 0 ; j < NBPLAYER ; j ++){
+		for (int j = 0 ; j < (NBPLAYER * NBGAMES) ; j ++){
 			switch (participants[i].results[j]) {
 				case BLACKDRAW:
 				case WHITEDRAW:
-					participants[i].SB += participants[j].score;
+					participants[i].SB += participants[j / NBGAMES].score;
 					break;
 				case BLACKWIN:
 				case WHITEWIN:
-					participants[i].SB += 2 * participants[j].score;
+					participants[i].SB += 2 * participants[j / NBGAMES].score;
 					break;
 				default:
 					break;
@@ -254,33 +254,35 @@ static void simulate(){
 		participants[i] = input[i];
 	for(int i = 0 ; i < (NBPLAYER - 1) ; i ++){
 		for(int j = i + 1 ; j < NBPLAYER ; j ++){
-			if(participants[i].results[j] == BLACKPLAY){
-				int r = rand() % 200;
-				if(r < getLosingProbability(participants[i].Elo - participants[j].Elo)){
-					participants[i].results[j] = BLACKLOSS;
-					participants[j].results[i] = WHITEWIN;
-				} else {
-					if(r < 3 * getLosingProbability(participants[i].Elo - participants[j].Elo)){
-						participants[i].results[j] = BLACKDRAW;
-						participants[j].results[i] = WHITEDRAW;
+			for(int k = 0 ; k < NBGAMES ; k ++){
+				if(participants[i].results[(NBGAMES * j) + k] == BLACKPLAY){
+					int r = rand() % 200;
+					if(r < getLosingProbability(participants[i].Elo - participants[j].Elo)){
+						participants[i].results[j] = BLACKLOSS;
+						participants[j].results[i] = WHITEWIN;
 					} else {
-						participants[i].results[j] = BLACKWIN;
-						participants[j].results[i] = WHITELOSS;
+						if(r < 3 * getLosingProbability(participants[i].Elo - participants[j].Elo)){
+							participants[i].results[j] = BLACKDRAW;
+							participants[j].results[i] = WHITEDRAW;
+						} else {
+							participants[i].results[j] = BLACKWIN;
+							participants[j].results[i] = WHITELOSS;
+						}
 					}
 				}
-			}
-			if(participants[i].results[j] == WHITEPLAY){
-				int r = rand() % 200;
-				if(r < getLosingProbability(participants[i].Elo - participants[j].Elo)){
-					participants[i].results[j] = WHITELOSS;
-					participants[j].results[i] = BLACKWIN;
-				} else {
-					if(r < 3 * getLosingProbability(participants[i].Elo - participants[j].Elo)){
-						participants[i].results[j] = WHITEDRAW;
-						participants[j].results[i] = BLACKDRAW;
+				if(participants[i].results[(NBGAMES * j) + k] == WHITEPLAY){
+					int r = rand() % 200;
+					if(r < getLosingProbability(participants[i].Elo - participants[j].Elo)){
+						participants[i].results[j] = WHITELOSS;
+						participants[j].results[i] = BLACKWIN;
 					} else {
-						participants[i].results[j] = WHITEWIN;
-						participants[j].results[i] = BLACKLOSS;
+						if(r < 3 * getLosingProbability(participants[i].Elo - participants[j].Elo)){
+							participants[i].results[j] = WHITEDRAW;
+							participants[j].results[i] = BLACKDRAW;
+						} else {
+							participants[i].results[j] = WHITEWIN;
+							participants[j].results[i] = BLACKLOSS;
+						}
 					}
 				}
 			}
@@ -293,7 +295,7 @@ int main(int argc, char * argv []){
 	srand((unsigned int)time(NULL));
 	for(int i = 0 ; i < NBPLAYER ; i ++) {
 		scanf("%s %d %d ", input[i].name, &(input[i].nbCrash), &(input[i].Elo));
-		for(int j = 0 ; j < NBPLAYER ; j ++)
+		for(int j = 0 ; j < (NBPLAYER * NBGAMES) ; j ++)
 			scanf("%d ", &(input[i].results[j]));
 		input[i].id = i;
 		if(strlen(input[i].name) > maxNameLength)
