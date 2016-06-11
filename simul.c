@@ -16,13 +16,14 @@
 #define NBITER    10000000
 #define NBPLAYER  16
 #define NBQUALIF  8
+#define NBGAMES   1
 
 struct Engine {
 	char name[20];
 	int nbCrash;
 	int SB;
 	int Elo;
-	int results[NBPLAYER];
+	int results[NBPLAYER * NBGAMES];
 	int score;
 	int nbQualif;
 	int id;
@@ -68,27 +69,30 @@ static void printEngine(int i){
 			break;
 	}
 	for (int j = 0 ; j < NBPLAYER ; j ++){
-		switch (participants[i].results[participants[j].id]) {
-			case BLACKLOSS:
-			case WHITELOSS:
-				printf("0 ");
-				break;
-			case BLACKDRAW:
-			case WHITEDRAW:
-				printf("= ");
-				break;
-			case BLACKWIN:
-			case WHITEWIN:
-				printf("1 ");
-				break;
-			case BLACKPLAY:
-			case WHITEPLAY:
-				printf(". ");
-				break;
-			case SELF:
-				printf("X ");
-				break;
+		for(int k = 0 ; k < NBGAMES ; k ++){
+			switch (participants[i].results[(NBGAMES * participants[j].id) + k]) {
+				case BLACKLOSS:
+				case WHITELOSS:
+					printf("0");
+					break;
+				case BLACKDRAW:
+				case WHITEDRAW:
+					printf("=");
+					break;
+				case BLACKWIN:
+				case WHITEWIN:
+					printf("1");
+					break;
+				case BLACKPLAY:
+				case WHITEPLAY:
+					printf(".");
+					break;
+				case SELF:
+					printf("X");
+					break;
+			}
 		}
+		printf(" ");
 	}
 	printf("\n");
 }
@@ -120,7 +124,7 @@ static int isAhead(int a, int b){
 
 	int acount = 0;
 	int bcount = 0;
-	for(int i = 0 ; i < NBPLAYER ; i ++){
+	for(int i = 0 ; i < (NBPLAYER * NBGAMES) ; i ++){
 		if((participants[a].results[i] == BLACKLOSS) || (participants[a].results[i] == BLACKDRAW) || (participants[a].results[i] == BLACKWIN))
 			acount ++;
 		if((participants[b].results[i] == BLACKLOSS) || (participants[b].results[i] == BLACKDRAW) || (participants[b].results[i] == BLACKWIN))
@@ -135,7 +139,7 @@ static int isAhead(int a, int b){
 
 	acount = 0;
 	bcount = 0;
-	for(int i = 0 ; i < NBPLAYER ; i ++){
+	for(int i = 0 ; i < (NBPLAYER * NBGAMES) ; i ++){
 		if((participants[a].results[i] == WHITEWIN) || (participants[a].results[i] == BLACKWIN))
 			acount ++;
 		if((participants[b].results[i] == WHITEWIN) || (participants[b].results[i] == BLACKWIN))
@@ -150,7 +154,7 @@ static int isAhead(int a, int b){
 
 	acount = 0;
 	bcount = 0;
-	for(int i = 0 ; i < NBPLAYER ; i ++){
+	for(int i = 0 ; i < (NBPLAYER * NBGAMES) ; i ++){
 		if(participants[a].results[i] == BLACKWIN)
 			acount ++;
 		if(participants[b].results[i] == BLACKWIN)
@@ -162,10 +166,17 @@ static int isAhead(int a, int b){
 		return b;
 
 	// 6EME TB DIRECT CONFRONTATION
+	acount = 0;
+	for(int i = 0 ; i < NBGAMES ; i ++){
+		if ((participants[a].results[(b * NBGAMES) + i] == BLACKWIN) || (participants[a].results[(b * NBGAMES) + i] == WHITEWIN))
+			acount += 2;
+		if ((participants[a].results[(b * NBGAMES) + i] == BLACKDRAW) || (participants[a].results[(b * NBGAMES) + i] == WHITEDRAW))
+			acount ++;
+	}
 
-	if ((participants[b].results[a] == BLACKWIN) || (participants[a].results[b] == WHITEWIN))
+	if (acount > NBGAMES)
 		return a;
-	if ((participants[b].results[a] == BLACKWIN) || (participants[a].results[b] == WHITEWIN))
+	if (acount < NBGAMES)
 		return b;
 
 	// EGALITE ==> RANDOM
@@ -304,7 +315,7 @@ int main(int argc, char * argv []){
 			int percentage = (100 * (i + 1)) / NBITER;
 			printf("\r");
 			for(int k = 0 ; k < 80 ; k ++)
-			       printf(" ");	
+				printf(" ");
 			printf("\rSimulation currently at %d%%", percentage);
 			fflush(stdout);
 		}
