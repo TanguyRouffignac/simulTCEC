@@ -6,7 +6,7 @@ all: simul
 simul: simul.o elotable.o
 
 run: simul
-	@cat stage1b | ./simul
+	@cat stage2 | ./simul
 
 clean:
 	rm -rf *.o simul

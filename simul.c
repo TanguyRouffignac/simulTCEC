@@ -16,7 +16,7 @@
 #define NBITER    10000000
 #define NBPLAYER  16
 #define NBQUALIF  8
-#define NBGAMES   1
+#define NBGAMES   2
 
 struct Engine {
 	char name[20];
@@ -166,17 +166,19 @@ static int isAhead(int a, int b){
 		return b;
 
 	// 6EME TB DIRECT CONFRONTATION
+
 	acount = 0;
+	bcount = 0;
 	for(int i = 0 ; i < NBGAMES ; i ++){
 		if ((participants[a].results[(b * NBGAMES) + i] == BLACKWIN) || (participants[a].results[(b * NBGAMES) + i] == WHITEWIN))
-			acount += 2;
-		if ((participants[a].results[(b * NBGAMES) + i] == BLACKDRAW) || (participants[a].results[(b * NBGAMES) + i] == WHITEDRAW))
 			acount ++;
+		if ((participants[a].results[(b * NBGAMES) + i] == BLACKLOSS) || (participants[a].results[(b * NBGAMES) + i] == WHITELOSS))
+			bcount ++;
 	}
 
-	if (acount > NBGAMES)
+	if (acount > bcount)
 		return a;
-	if (acount < NBGAMES)
+	if (acount < bcount)
 		return b;
 
 	// EGALITE ==> RANDOM
