@@ -312,9 +312,9 @@ int main(int argc, char * argv []){
 	}
 	for(int i = 0 ; i < NBPLAYER ; i ++)
 		participants[i] = input[i];
-	printf("\n                     *********************\n");
-	printf("                     * Current standings *\n");
-	printf("                     *********************\n\n");
+	printf("\n                               *********************\n");
+	printf("                               * Current standings *\n");
+	printf("                               *********************\n\n");
 	getScores(1);
 	printf("\nStarting a simulation with %d iterations\n", NBITER);
 	printf("Simulation currently at 0%%");
