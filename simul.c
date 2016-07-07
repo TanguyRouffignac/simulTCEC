@@ -51,6 +51,8 @@ static void printEngine(int i){
 			printf(".5 ");
 			break;
 	}
+	if(participants[i].SB / 4 < 100)
+		printf(" ");
 	if(participants[i].SB / 4 < 10)
 		printf(" ");
 	printf("%d", participants[i].SB / 4);
