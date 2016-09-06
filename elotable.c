@@ -16,4 +16,3 @@ int getLosingProbability(int diff){
 	else
 		return readTable(- diff);
 }
-

@@ -14,9 +14,9 @@
 #define WHITEPLAY 55
 #define SELF      56
 #define NBITER    10000000
-#define NBPLAYER  16
-#define NBQUALIF  8
-#define NBGAMES   2
+#define NBPLAYER  8
+#define NBQUALIF  2
+#define NBGAMES   8
 
 struct Engine {
 	char name[20];
@@ -33,14 +33,14 @@ struct Engine input[NBPLAYER];
 struct Engine participants[NBPLAYER];
 int maxNameLength = 0;
 
-static void printEngine(int i){
+static void printEngine(int i, int sb, int pt){
 	if(i < 9)
 		printf(" ");
 	printf("%d %s ", i + 1, participants[i].name);
 	for(int j = 0 ; j < (maxNameLength - strlen(participants[i].name)) ; j++)
 		printf(" ");
 	printf("%d ", participants[i].Elo);
-	if(participants[i].score / 2 < 10)
+	if((participants[i].score / 2 < 10) && (pt / 2 >= 10))
 		printf(" ");
 	printf("%d", participants[i].score / 2);
 	switch(participants[i].score % 2){
@@ -51,9 +51,11 @@ static void printEngine(int i){
 			printf(".5 ");
 			break;
 	}
-	if(participants[i].SB / 4 < 100)
+	if((participants[i].SB / 4 < 1000) && (sb / 4 >= 1000))
 		printf(" ");
-	if(participants[i].SB / 4 < 10)
+	if((participants[i].SB / 4 < 100) && (sb / 4 >= 100))
+		printf(" ");
+	if((participants[i].SB / 4 < 10) && (sb / 4 >= 10))
 		printf(" ");
 	printf("%d", participants[i].SB / 4);
 	switch(participants[i].SB % 4){
@@ -210,9 +212,18 @@ static void sort(int init){
 		if(! init)
 			input[participants[i].id].nbQualif ++;
 	}
-	if (init)
+	if (init){
+		int sb = 0;
+		int pt = 0;
+		for(int i = 0 ; i < limit ; i ++){
+			if (participants[i].SB > sb)
+				sb = participants[i].SB;
+			if (participants[i].score > pt)
+				pt = participants[i].score;
+		}
 		for(int i = 0 ; i < limit ; i ++)
-			printEngine(i);
+			printEngine(i, sb, pt);
+	}
 }
 
 static void getScores(int init){
